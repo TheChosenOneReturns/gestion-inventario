@@ -1,0 +1,77 @@
+name: Desplegar Backend a AWS ECR y EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Este pipeline solo se ejecutará si hay cambios en la carpeta del backend
+      - 'gestion-inventario-backend/**'
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Nos aseguramos de que los comandos se ejecuten en la carpeta correcta
+        working-directory: ./gestion-inventario-backend
+
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 2. Configurar JDK 17 para Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: 3. Construir la aplicación con Maven
+        run: ./mvnw clean package -DskipTests
+
+      - name: 4. Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 5. Iniciar sesión en Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: 6. Construir, etiquetar y subir la imagen a ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ github.sha }} # Usamos el hash del commit como una etiqueta única y fiable
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: 7. Desplegar en la instancia EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # Iniciar sesión en ECR desde la instancia EC2 (usa el Rol de IAM que configuramos)
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+            
+            # Detener y eliminar el contenedor actual si existe, para evitar conflictos
+            docker stop gestion-inventario-backend || true
+            docker rm gestion-inventario-backend || true
+            
+            # Descargar la nueva imagen de ECR con la etiqueta del commit
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:${{ github.sha }}
+            
+            # Ejecutar el nuevo contenedor (usando tu comando adaptado con los secretos)
+            docker run -d -p 80:5000 --name gestion-inventario-backend --restart always \
+            -e spring.jpa.hibernate.ddl-auto="validate" \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:${{ github.sha }}

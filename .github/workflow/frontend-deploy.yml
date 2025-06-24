@@ -1,0 +1,48 @@
+name: Desplegar Frontend a AWS S3 y CloudFront
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Este pipeline solo se ejecutará si hay cambios en la carpeta del frontend
+      - 'gestion-inventario-frontend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Nos aseguramos de que los comandos se ejecuten en la carpeta correcta
+        working-directory: ./gestion-inventario-frontend
+
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 2. Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 3. Instalar dependencias
+        run: npm install
+
+      - name: 4. Construir la aplicación de React/Vite
+        run: npm run build
+        env:
+          # Inyecta el secreto VITE_API_URL durante la compilación
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: 5. Configurar credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 6. Subir archivos a S3
+        run: aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete
+
+      - name: 7. Invalidar la caché de CloudFront
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DIST_ID }} --paths "/*"
