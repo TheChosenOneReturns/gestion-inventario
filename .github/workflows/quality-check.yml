@@ -1,0 +1,58 @@
+name: Pruebas y Calidad
+
+on:
+  # Este workflow se ejecutará en cada Pull Request que apunte a la rama main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./gestion-inventario-backend
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 2. Configurar JDK 17 para Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: 3. Ejecutar Pruebas Unitarias con Maven
+        # A diferencia del deploy, aquí sí ejecutamos las pruebas.
+        # Si alguna prueba falla, el pipeline se detendrá aquí.
+        run: ./mvnw clean install
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./gestion-inventario-frontend
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 2. Configurar Node.js y caché de NPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          # Apuntar al package-lock.json específico del frontend para la caché
+          cache-dependency-path: 'gestion-inventario-frontend/package-lock.json'
+
+      - name: 3. Instalar dependencias
+        run: npm install
+
+      - name: 4. Ejecutar Linter para Calidad de Código
+        # El flag --if-present evita errores si el script "lint" no existe.
+        # Es una buena práctica tenerlo en tu package.json.
+        run: npm run lint --if-present
+
+      - name: 5. Verificar que la aplicación construya correctamente
+        # Esto atrapa errores de sintaxis de React, imports rotos, etc.
+        run: npm run build
