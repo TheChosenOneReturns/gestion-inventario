@@ -23,7 +23,10 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: 3. Ejecutar Pruebas Unitarias con Maven
+      - name: 3. Dar permisos de ejecución a mvnw
+        run: chmod +x ./mvnw
+
+      - name: 4. Ejecutar Pruebas Unitarias con Maven
         # A diferencia del deploy, aquí sí ejecutamos las pruebas.
         # Si alguna prueba falla, el pipeline se detendrá aquí.
         run: ./mvnw clean install
@@ -56,3 +59,38 @@ jobs:
       - name: 5. Verificar que la aplicación construya correctamente
         # Esto atrapa errores de sintaxis de React, imports rotos, etc.
         run: npm run build
+
+  scan-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 2. Escanear vulnerabilidades en dependencias con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          # Escanea el sistema de archivos en busca de archivos de dependencias (pom.xml, package-lock.json, etc.)
+          scan-type: 'fs'
+          # Ignora las vulnerabilidades que aún no tienen una solución (reduce el ruido)
+          ignore-unfixed: true
+          # Falla el pipeline solo si encuentra vulnerabilidades de criticidad alta o crítica
+          severity: 'CRITICAL,HIGH'
+
+  scan-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Obtener el código del repositorio
+        uses: actions/checkout@v3
+        with:
+          # Necesitamos el historial completo para que TruffleHog pueda escanearlo
+          fetch-depth: 0
+
+      - name: 2. Escanear en busca de secretos expuestos con TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          # Escanea desde el punto en que la rama se desvió de 'main'
+          base: ${{ github.event.pull_request.base.ref }}
+          # Escanea hasta el último commit de la rama actual
+          head: ${{ github.event.pull_request.head.ref }}
+          # Falla el pipeline si encuentra algún secreto
+          fail: true
