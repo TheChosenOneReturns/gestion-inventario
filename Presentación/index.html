@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comercializa S.A. - Sistema de Gestión de Inventario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-dark: #0f172a;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-dark), var(--secondary-color));
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        /* Sections */
+        section {
+            padding: 80px 0;
+        }
+
+        section:nth-child(even) {
+            background-color: var(--bg-secondary);
+        }
+
+        /* Mejor centralización */
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-subtitle::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 1px;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Architecture Diagram - Improved */
+        .architecture-diagram {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .diagram-container {
+            position: relative;
+            height: 600px;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .diagram-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .diagram-layer {
+            position: relative;
+            border: 3px solid;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            min-width: 180px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .diagram-layer:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .frontend-layer {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-color: #2196f3;
+            color: #1565c0;
+        }
+
+        .backend-layer {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-color: #9c27b0;
+            color: #6a1b9a;
+        }
+
+        .database-layer {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .aws-layer {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-color: #ff9800;
+            color: #ef6c00;
+        }
+
+        .layer-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .layer-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.9;
+        }
+
+        .layer-content div {
+            margin: 2px 0;
+        }
+
+        /* Connection lines */
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, #2196f3, #9c27b0);
+            height: 3px;
+            border-radius: 2px;
+            opacity: 0.6;
+        }
+
+        .line-1 {
+            top: 180px;
+            left: 25%;
+            width: 50%;
+        }
+
+        .line-2 {
+            top: 360px;
+            left: 35%;
+            width: 30%;
+        }
+
+        .line-3 {
+            top: 180px;
+            right: 15%;
+            width: 20%;
+            transform: rotate(90deg);
+            transform-origin: left center;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: var(--primary-color);
+            border: 4px solid white;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-item:nth-child(even)::after {
+            left: -10px;
+        }
+
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item::after {
+                left: 21px;
+            }
+
+            .timeline-item:nth-child(even) {
+                left: 0%;
+            }
+
+            .diagram-container {
+                transform: scale(0.8);
+                transform-origin: top left;
+            }
+        }
+
+        /* Scroll Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--success-color));
+            z-index: 1001;
+            transition: width 0.3s;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--bg-dark);
+            color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, var(--accent-color) 0%, var(--accent-color) 100%, transparent 100%);
+            background-size: 0% 100%;
+            background-repeat: no-repeat;
+            transition: background-size 0.3s;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .highlight:hover {
+            background-size: 100% 100%;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .diagram-container {
+                height: auto;
+            }
+            
+            .diagram-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .diagram-layer {
+                min-width: 250px;
+                margin: 10px 0;
+            }
+            
+            .connection-line {
+                display: none;
+            }
+        }
+
+        /* Network Flow Styles */
+        .network-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .flow-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-content h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .flow-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .security-layer {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .security-item {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .security-item:hover {
+            transform: scale(1.05);
+        }
+
+        .security-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Deployment Flow Styles */
+        .deployment-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .deploy-step {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .deploy-step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .deploy-step.success {
+            background: linear-gradient(135deg, var(--success-color), #34d399);
+            color: white;
+        }
+
+        .deploy-number {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .deploy-step.success .deploy-number {
+            background: rgba(255,255,255,0.2);
+            font-size: 1.2rem;
+        }
+
+        .deploy-content h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        .deploy-step.success .deploy-content h4 {
+            color: white;
+        }
+
+        .deploy-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .deploy-step.success .deploy-content p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .deploy-arrow {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .network-flow {
+                flex-direction: column;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .security-layer {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .deploy-step:hover {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Arquitectura Elegante */
+        .elegant-architecture {
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .architecture-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .architecture-header h3 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .architecture-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .architecture-layers {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .arch-layer {
+            background: white;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .arch-layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .presentation-layer {
+            border-top: 5px solid #2196f3;
+        }
+
+        .application-layer {
+            border-top: 5px solid #9c27b0;
+        }
+
+        .data-layer {
+            border-top: 5px solid #4caf50;
+        }
+
+        .layer-header {
+            background: linear-gradient(135deg, var(--bg-secondary), white);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .layer-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .layer-header h4 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0;
+            flex: 1;
+        }
+
+        .layer-badge {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .layer-body {
+            padding: 2rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tech-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tech-card:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tech-info h5 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .tech-card:hover .tech-info h5 {
+            color: white;
+        }
+
+        .tech-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .tech-card:hover .tech-info p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .layer-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .connector-line {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+            position: relative;
+        }
+
+        .connector-icon {
+            position: absolute;
+            background: white;
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .connector-text {
+            position: absolute;
+            left: 60px;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* New Infrastructure Section Styles */
+        .infrastructure-section {
+            margin-top: 4rem;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--bg-secondary), white);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .infra-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .infra-header h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .infra-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .infra-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid;
+        }
+
+        .infra-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .infra-card:nth-child(1) { border-top-color: #ff9800; }
+        .infra-card:nth-child(2) { border-top-color: #4caf50; }
+        .infra-card:nth-child(3) { border-top-color: #2196f3; }
+        .infra-card:nth-child(4) { border-top-color: #9c27b0; }
+        .infra-card:nth-child(5) { border-top-color: #f44336; }
+        .infra-card:nth-child(6) { border-top-color: #607d8b; }
+
+        .infra-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .infra-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .infra-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Responsive para arquitectura */
+        @media (max-width: 768px) {
+            .infrastructure-overlay {
+                position: static;
+                transform: none;
+                right: auto;
+                margin-top: 2rem;
+                margin-left: 0;
+            }
+            
+            .connector-text {
+                position: static;
+                left: auto;
+                margin-top: 0.5rem;
+                display: inline-block;
+            }
+            
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .layer-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+
+        /* Network Flow Styles */
+        .network-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .flow-step {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .flow-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-content h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .flow-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .security-layer {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .security-item {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .security-item:hover {
+            transform: scale(1.05);
+        }
+
+        .security-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Deployment Flow Styles */
+        .deployment-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .deploy-step {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .deploy-step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .deploy-step.success {
+            background: linear-gradient(135deg, var(--success-color), #34d399);
+            color: white;
+        }
+
+        .deploy-number {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .deploy-step.success .deploy-number {
+            background: rgba(255,255,255,0.2);
+            font-size: 1.2rem;
+        }
+
+        .deploy-content h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        .deploy-step.success .deploy-content h4 {
+            color: white;
+        }
+
+        .deploy-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .deploy-step.success .deploy-content p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .deploy-arrow {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .network-flow {
+                flex-direction: column;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .security-layer {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .deploy-step:hover {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Arquitectura Elegante */
+        .elegant-architecture {
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .architecture-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .architecture-header h3 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .architecture-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .architecture-layers {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .arch-layer {
+            background: white;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .arch-layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .presentation-layer {
+            border-top: 5px solid #2196f3;
+        }
+
+        .application-layer {
+            border-top: 5px solid #9c27b0;
+        }
+
+        .data-layer {
+            border-top: 5px solid #4caf50;
+        }
+
+        .layer-header {
+            background: linear-gradient(135deg, var(--bg-secondary), white);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .layer-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .layer-header h4 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0;
+            flex: 1;
+        }
+
+        .layer-badge {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .layer-body {
+            padding: 2rem;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tech-card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tech-card:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tech-info h5 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .tech-card:hover .tech-info h5 {
+            color: white;
+        }
+
+        .tech-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .tech-card:hover .tech-info p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .layer-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .connector-line {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
+            position: relative;
+        }
+
+        .connector-icon {
+            position: absolute;
+            background: white;
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .connector-text {
+            position: absolute;
+            left: 60px;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* New Infrastructure Section Styles */
+        .infrastructure-section {
+            margin-top: 4rem;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--bg-secondary), white);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .infra-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .infra-header h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .infra-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .infra-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid;
+        }
+
+        .infra-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .infra-card:nth-child(1) { border-top-color: #ff9800; }
+        .infra-card:nth-child(2) { border-top-color: #4caf50; }
+        .infra-card:nth-child(3) { border-top-color: #2196f3; }
+        .infra-card:nth-child(4) { border-top-color: #9c27b0; }
+        .infra-card:nth-child(5) { border-top-color: #f44336; }
+        .infra-card:nth-child(6) { border-top-color: #607d8b; }
+
+        .infra-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .infra-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .infra-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Responsive para arquitectura */
+        @media (max-width: 768px) {
+            .connector-text {
+                position: static;
+                left: auto;
+                margin-top: 0.5rem;
+                display: inline-block;
+            }
+            
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .layer-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <header>
+        <nav class="container">
+            <div class="logo">🏢 Comercializa S.A.</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Visión General</a></li>
+                <li><a href="#architecture">Arquitectura</a></li>
+                <li><a href="#technologies">Tecnologías</a></li>
+                <li><a href="#infrastructure">Infraestructura</a></li>
+                <li><a href="#cicd">CI/CD</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Comercializa S.A.</h1>
+            <p>Sistema de Gestión de Inventario Multi-Tenant</p>
+            <div class="version-badge">Versión 1.0.0 - Junio 2025</div>
+        </div>
+    </section>
+
+    <section id="overview" class="fade-in">
+        <div class="container">
+            <h2 class="section-title">Visión General del Sistema</h2>
+            <p style="text-align: center; font-size: 1.1rem; margin-bottom: 3rem; color: var(--text-secondary);">
+                Sistema SaaS multi-tenant que permite a múltiples empresas gestionar de forma independiente 
+                sus productos, ventas, proveedores, empleados y métricas financieras en un entorno seguro y aislado.
+            </p>
+            
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🏢</div>
+                    <h3>Multi-Tenancy</h3>
+                    <p>Aislamiento completo de datos entre clientes con arquitectura segura a nivel de aplicación.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Gestión Integral</h3>
+                    <p>Control completo de productos, ventas, proveedores, empleados y métricas financieras.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h3>Seguridad Avanzada</h3>
+                    <p>Autenticación JWT, autorización basada en roles y aislamiento de datos por tenant.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Alto Rendimiento</h3>
+                    <p>Arquitectura optimizada con Spring Boot 3, React 18 y infraestructura AWS escalable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="fade-in">
+    <div class="container">
+        <h2 class="section-title">Arquitectura del Sistema</h2>
+        
+        <!-- Nuevo diseño elegante de arquitectura -->
+        <div class="elegant-architecture">
+            <div class="architecture-header">
+                <h3>Arquitectura Multi-Capa Moderna</h3>
+                <p>Diseño escalable y seguro para aplicaciones empresariales</p>
+            </div>
+            
+            <div class="architecture-layers">
+                <!-- Capa de Presentación -->
+                <div class="arch-layer presentation-layer">
+                    <div class="layer-header">
+                        <div class="layer-icon">🎨</div>
+                        <h4>Capa de Presentación</h4>
+                        <span class="layer-badge">Frontend</span>
+                    </div>
+                    <div class="layer-body">
+                        <div class="tech-grid">
+                            <div class="tech-card">
+                                <div class="tech-icon">⚛️</div>
+                                <div class="tech-info">
+                                    <h5>React 18</h5>
+                                    <p>UI Library</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">⚡</div>
+                                <div class="tech-info">
+                                    <h5>Vite</h5>
+                                    <p>Build Tool</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">🛣️</div>
+                                <div class="tech-info">
+                                    <h5>Router</h5>
+                                    <p>Navigation</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">📡</div>
+                                <div class="tech-info">
+                                    <h5>Axios</h5>
+                                    <p>HTTP Client</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separador con conexión -->
+                <div class="layer-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-icon">🔄</div>
+                    <div class="connector-text">API REST</div>
+                </div>
+
+                <!-- Capa de Aplicación -->
+                <div class="arch-layer application-layer">
+                    <div class="layer-header">
+                        <div class="layer-icon">⚙️</div>
+                        <h4>Capa de Aplicación</h4>
+                        <span class="layer-badge">Backend</span>
+                    </div>
+                    <div class="layer-body">
+                        <div class="tech-grid">
+                            <div class="tech-card">
+                                <div class="tech-icon">☕</div>
+                                <div class="tech-info">
+                                    <h5>Java 17</h5>
+                                    <p>LTS Runtime</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">🍃</div>
+                                <div class="tech-info">
+                                    <h5>Spring Boot</h5>
+                                    <p>Framework</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">🔐</div>
+                                <div class="tech-info">
+                                    <h5>Security</h5>
+                                    <p>Authentication</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">🏗️</div>
+                                <div class="tech-info">
+                                    <h5>Maven</h5>
+                                    <p>Build Tool</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Separador con conexión -->
+                <div class="layer-connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-icon">💾</div>
+                    <div class="connector-text">JPA/Hibernate</div>
+                </div>
+
+                <!-- Capa de Datos -->
+                <div class="arch-layer data-layer">
+                    <div class="layer-header">
+                        <div class="layer-icon">🗄️</div>
+                        <h4>Capa de Datos</h4>
+                        <span class="layer-badge">Database</span>
+                    </div>
+                    <div class="layer-body">
+                        <div class="tech-grid">
+                            <div class="tech-card">
+                                <div class="tech-icon">🐬</div>
+                                <div class="tech-info">
+                                    <h5>MySQL 8.0</h5>
+                                    <p>RDBMS</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">☁️</div>
+                                <div class="tech-info">
+                                    <h5>RDS</h5>
+                                    <p>Managed DB</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">📊</div>
+                                <div class="tech-info">
+                                    <h5>Multi-Tenant</h5>
+                                    <p>Data Isolation</p>
+                                </div>
+                            </div>
+                            <div class="tech-card">
+                                <div class="tech-icon">🔄</div>
+                                <div class="tech-info">
+                                    <h5>Backup</h5>
+                                    <p>Auto Recovery</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capa de Infraestructura -->
+                <div class="infrastructure-section">
+                    <div class="infra-header">
+                        <h3>☁️ Infraestructura AWS</h3>
+                        <p>Servicios cloud para escalabilidad y confiabilidad</p>
+                    </div>
+                    <div class="infra-grid">
+                        <div class="infra-card">
+                            <span class="infra-icon">🌐</span>
+                            <h4>CloudFront</h4>
+                            <p>CDN Global</p>
+                        </div>
+                        <div class="infra-card">
+                            <span class="infra-icon">🪣</span>
+                            <h4>S3</h4>
+                            <p>Static Hosting</p>
+                        </div>
+                        <div class="infra-card">
+                            <span class="infra-icon">🖥️</span>
+                            <h4>EC2</h4>
+                            <p>Compute</p>
+                        </div>
+                        <div class="infra-card">
+                            <span class="infra-icon">📦</span>
+                            <h4>ECR</h4>
+                            <p>Container Registry</p>
+                        </div>
+                        <div class="infra-card">
+                            <span class="infra-icon">🔐</span>
+                            <h4>IAM</h4>
+                            <p>Access Control</p>
+                        </div>
+                        <div class="infra-card">
+                            <span class="infra-icon">🛡️</span>
+                            <h4>VPC</h4>
+                            <p>Network Security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="section-subtitle">Ventajas de la Arquitectura Unificada</h3>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h3>Desarrollo Sincronizado</h3>
+                <p>Frontend y backend evolucionan juntos, eliminando incompatibilidades entre versiones.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3>Despliegue Atómico</h3>
+                <p>Un solo commit puede actualizar toda la aplicación, garantizando consistencia total.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛠️</div>
+                <h3>Gestión Simplificada</h3>
+                <p>Un repositorio, un pipeline, una fuente de verdad para todo el equipo de desarrollo.</p>
+            </div>
+        </div>
+
+        <h3 class="section-subtitle">Capas de la Arquitectura Backend</h3>
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>Controller</h3>
+                <p>API REST endpoints con principios RESTful, manejo centralizado de excepciones y separación por contexto (client/super panel).</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>Service</h3>
+                <p>Lógica de negocio transaccional, orquestación de operaciones y coordinación entre repositorios.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">💾</div>
+                <h3>Repository</h3>
+                <p>Acceso a datos con Spring Data JPA, consultas derivadas y JPQL personalizado para reportes complejos.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <h3>Model & DTO</h3>
+                <p>Entidades JPA con relaciones bien definidas y DTOs para transferencia segura de datos.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section id="technologies" class="fade-in">
+        <div class="container">
+            <h2 class="section-title">Stack Tecnológico</h2>
+            
+            <h3 class="section-subtitle">Backend Technologies</h3>
+            <div class="tech-stack">
+                <div class="tech-item"><span class="highlight">Java 17 LTS</span></div>
+                <div class="tech-item"><span class="highlight">Spring Boot 3</span></div>
+                <div class="tech-item"><span class="highlight">Spring Security 6</span></div>
+                <div class="tech-item"><span class="highlight">Spring Data JPA</span></div>
+                <div class="tech-item"><span class="highlight">MySQL 8.0</span></div>
+                <div class="tech-item"><span class="highlight">Maven</span></div>
+                <div class="tech-item"><span class="highlight">JWT</span></div>
+                <div class="tech-item"><span class="highlight">Docker</span></div>
+            </div>
+
+            <h3 class="section-subtitle">Frontend Technologies</h3>
+            <div class="tech-stack">
+                <div class="tech-item"><span class="highlight">React 18</span></div>
+                <div class="tech-item"><span class="highlight">Vite</span></div>
+                <div class="tech-item"><span class="highlight">React Router v6</span></div>
+                <div class="tech-item"><span class="highlight">Axios</span></div>
+                <div class="tech-item"><span class="highlight">Context API</span></div>
+                <div class="tech-item"><span class="highlight">ES6+ JavaScript</span></div>
+                <div class="tech-item"><span class="highlight">CSS3</span></div>
+                <div class="tech-item"><span class="highlight">HTML5</span></div>
+            </div>
+
+            <h3 class="section-subtitle">Características Clave de Seguridad</h3>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🔐</div>
+                    <h3>Autenticación JWT</h3>
+                    <p>Tokens seguros con claims de usuario, rol y clientId. Validación automática en cada petición.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏠</div>
+                    <h3>Multi-Tenancy</h3>
+                    <p>Aislamiento de datos a nivel de aplicación con filtrado automático por clientId en todas las consultas.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Rutas Protegidas</h3>
+                    <p>Componente ProtectedRoute que valida autenticación antes de permitir acceso a secciones privadas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="infrastructure" class="fade-in">
+        <div class="container">
+            <h2 class="section-title">Infraestructura AWS</h2>
+            
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <h3>Frontend (S3 + CloudFront)</h3>
+                    <p>Hosting estático en S3 con distribución global via CloudFront CDN. Configuración OAC para acceso seguro.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🖥️</div>
+                    <h3>Backend (EC2 + ECR)</h3>
+                    <p>Instancia EC2 con Docker ejecutando contenedores desde imágenes almacenadas en Amazon ECR.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🗄️</div>
+                    <h3>Base de Datos (RDS)</h3>
+                    <p>MySQL 8.0 en Amazon RDS con alta disponibilidad, backups automáticos y parches gestionados.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h3>Seguridad (VPC + IAM)</h3>
+                    <p>VPC con subredes públicas/privadas, Security Groups restrictivos y roles IAM sin credenciales estáticas.</p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Arquitectura de Red</h3>
+<div class="network-flow">
+    <div class="flow-step">
+        <div class="flow-icon">🌐</div>
+        <div class="flow-content">
+            <h4>Internet</h4>
+            <p>Usuarios globales</p>
+        </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+        <div class="flow-icon">⚡</div>
+        <div class="flow-content">
+            <h4>CloudFront</h4>
+            <p>CDN Global</p>
+        </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+        <div class="flow-icon">🪣</div>
+        <div class="flow-content">
+            <h4>S3 Bucket</h4>
+            <p>Frontend Static</p>
+        </div>
+    </div>
+</div>
+
+<div class="network-flow">
+    <div class="flow-step">
+        <div class="flow-icon">🌐</div>
+        <div class="flow-content">
+            <h4>API Calls</h4>
+            <p>Frontend → Backend</p>
+        </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+        <div class="flow-icon">🖥️</div>
+        <div class="flow-content">
+            <h4>EC2 Instance</h4>
+            <p>Backend Server</p>
+        </div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+        <div class="flow-icon">🗄️</div>
+        <div class="flow-content">
+            <h4>RDS MySQL</h4>
+            <p>Database</p>
+        </div>
+    </div>
+</div>
+
+<div class="security-layer">
+    <div class="security-item">
+        <span class="security-icon">🛡️</span>
+        <span>VPC Security Groups</span>
+    </div>
+    <div class="security-item">
+        <span class="security-icon">🔐</span>
+        <span>IAM Roles</span>
+    </div>
+    <div class="security-item">
+        <span class="security-icon">🔒</span>
+        <span>Private Subnets</span>
+    </div>
+</div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">🌍</div>
+                    <h3>Subred Pública</h3>
+                    <p>Contiene la instancia EC2 con acceso bidireccional a internet via Internet Gateway.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h3>Subred Privada</h3>
+                    <p>Aloja la instancia RDS sin acceso directo a internet para máxima seguridad.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Security Groups</h3>
+                    <p>SG-Backend permite puerto 8080 y SSH. SG-DB solo permite MySQL desde SG-Backend.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cicd" class="fade-in">
+        <div class="container">
+            <h2 class="section-title">Pipeline CI/CD</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🔍 Quality Check</h3>
+                        <p>Ejecuta en cada pull request hacia la rama Main. Compila el código Java y ejecuta pruebas unitarias con Maven para garantizar la calidad del código, posibles vulnerabilidades criticas del sistema y secretos expuestos.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🚀 Frontend Deploy</h3>
+                        <p>Build con Vite, sincronización con S3 e invalidación de caché en CloudFront para servir la nueva versión.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>🐳 Backend Deploy</h3>
+                        <p>Construcción de imagen Docker, push a ECR y despliegue automatizado en EC2 con rolling update.</p>
+                    </div>
+                </div>
+                
+                
+                
+            </div>
+
+            <h3 class="section-subtitle">Flujo de Despliegue</h3>
+<div class="deployment-flow">
+    <div class="deploy-step">
+        <div class="deploy-number">1</div>
+        <div class="deploy-content">
+            <h4>GitHub Push</h4>
+            <p>Desarrollador hace commit</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">2</div>
+        <div class="deploy-content">
+            <h4>GitHub Actions</h4>
+            <p>Pipeline automático se activa</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">3</div>
+        <div class="deploy-content">
+            <h4>Build & Test</h4>
+            <p>Compilación y pruebas</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">4</div>
+        <div class="deploy-content">
+            <h4>Docker Build</h4>
+            <p>Creación de imagen</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">5</div>
+        <div class="deploy-content">
+            <h4>ECR Push</h4>
+            <p>Subida a registro</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">6</div>
+        <div class="deploy-content">
+            <h4>EC2 Deploy</h4>
+            <p>Despliegue en servidor</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step">
+        <div class="deploy-number">7</div>
+        <div class="deploy-content">
+            <h4>Health Check</h4>
+            <p>Verificación de salud</p>
+        </div>
+    </div>
+    <div class="deploy-arrow">↓</div>
+    <div class="deploy-step success">
+        <div class="deploy-number">✓</div>
+        <div class="deploy-content">
+            <h4>Production Ready</h4>
+            <p>Sistema en producción</p>
+        </div>
+    </div>
+</div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Automatización Completa</h3>
+                    <p>Desde commit hasta producción sin intervención manual, con rollback automático en caso de fallos.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔄</div>
+                    <h3>Rolling Updates</h3>
+                    <p>Despliegues sin downtime con contenedores Docker y versionado de imágenes por commit hash.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Monitoreo</h3>
+                    <p>Logs centralizados en CloudWatch y métricas de salud de la aplicación en tiempo real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Comercializa S.A. - Sistema de Inventario v1.0.0</p>
+            <p>Arquitectura moderna, segura y escalable para empresas del futuro</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Progress bar
+        function updateProgressBar() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
+        }
+
+        window.addEventListener('scroll', updateProgressBar);
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Tech stack items hover effect
+        document.querySelectorAll('.tech-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.background = 'linear-gradient(135deg, var(--primary-color), var(--accent-color))';
+                this.style.color = 'white';
+                this.style.transform = 'scale(1.1) rotate(2deg)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.background = 'white';
+                this.style.color = 'var(--text-primary)';
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+
+        // Add typing effect to hero title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Initialize typing effect when page loads
+        window.addEventListener('load', function() {
+            const heroTitle = document.querySelector('.hero h1');
+            const originalText = heroTitle.textContent;
+            typeWriter(heroTitle, originalText, 80);
+        });
+
+        // Add floating animation to architecture diagram layers
+        function addFloatingAnimation() {
+            const layers = document.querySelectorAll('.diagram-layer');
+            layers.forEach((layer, index) => {
+                layer.style.animation = `float ${3 + index * 0.5}s ease-in-out infinite`;
+            });
+        }
+
+        // CSS for floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize floating animation
+        setTimeout(addFloatingAnimation, 1000);
+
+        // Add click counter for interactive elements
+        let clickCount = 0;
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('card') || e.target.classList.contains('tech-item')) {
+                clickCount++;
+                if (clickCount === 10) {
+                    // Easter egg
+                    document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd)';
+                    document.body.style.backgroundSize = '400% 400%';
+                    document.body.style.animation = 'gradientShift 3s ease infinite';
+                    
+                    const easterEggStyle = document.createElement('style');
+                    easterEggStyle.textContent = `
+                        @keyframes gradientShift {
+                            0% { background-position: 0% 50%; }
+                            50% { background-position: 100% 50%; }
+                            100% { background-position: 0% 50%; }
+                        }
+                    `;
+                    document.head.appendChild(easterEggStyle);
+                    
+                    setTimeout(() => {
+                        document.body.style.background = 'var(--bg-primary)';
+                        document.body.style.animation = 'none';
+                    }, 3000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
