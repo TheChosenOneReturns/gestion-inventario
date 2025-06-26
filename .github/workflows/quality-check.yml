@@ -23,7 +23,10 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: 3. Ejecutar Pruebas Unitarias con Maven
+      - name: 3. Dar permisos de ejecución a mvnw
+        run: chmod +x ./mvnw
+
+      - name: 4. Ejecutar Pruebas Unitarias con Maven
         # A diferencia del deploy, aquí sí ejecutamos las pruebas.
         # Si alguna prueba falla, el pipeline se detendrá aquí.
         run: ./mvnw clean install
